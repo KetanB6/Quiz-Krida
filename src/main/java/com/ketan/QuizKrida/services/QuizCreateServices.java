@@ -133,13 +133,15 @@ public class QuizCreateServices {
 
     @Transactional
     public void switchQuizStatus(int quizId) {
-        if(!qzRepo.existsById(quizId)) {
-            log.error("Quiz not exist to switch status!");
+        int updatedRows = qzRepo.toggleQuizStatus(quizId);
+
+
+        if(updatedRows == 0) {
+            log.error("Failed to toggle: Quiz not exist!");
             throw new ResourceNotFoundException("Quiz not exist!");
         }
-        Quizzes qz = qzRepo.findById(quizId).get();
-        qz.setStatus(!qz.isStatus());
-        log.info("Quiz status updated to " + qz.isStatus());
+
+        log.info("Successfully toggled status.");
     }
 
     public @Nullable List<ResultDTO> getResult(int quizId) {
