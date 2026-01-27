@@ -66,15 +66,8 @@ public class MentorController {
 
     //When user submit edited Quiz
     @PutMapping("/Logged/Edit")
-    public ResponseEntity<Void> editQuiz(@RequestBody Quiz quiz) {
+    public ResponseEntity<Void> editQuiz(@RequestBody EditQuizDTO quiz) {
         service.updateQuiz(quiz);
-        return ResponseEntity.status(HttpStatus.OK).build();
-    }
-
-    //Delete particular question by qno
-    @DeleteMapping("/Logged/DeleteQ")
-    public ResponseEntity<Void> deleteQuestion(@RequestBody int qno) {
-        service.deleteQuestion(qno);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
@@ -93,16 +86,3 @@ public class MentorController {
 
 }
 
-/*
-
-    @GetMapping("Questions")
-    public List<Question> getAllQuestions(){
-        return service.getAllQuestions();
-    }
-
-    @GetMapping("Users")
-    public List<User> getAllUsers(){
-        return service.getAllUsers();
-    }
-
- */

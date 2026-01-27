@@ -94,31 +94,37 @@ public class QuizCreateServices {
 
     //edit quiz
     @Transactional
-    public void updateQuiz(Quiz quiz) {
-        if (quiz == null || quiz.getQuiz() == null) {
-            log.info("quiz object is null");
-            throw new ResourceNotFoundException("Quiz not exist!");
+    public void updateQuiz(EditQuizDTO dto){
+        if(dto==null||dto.getQuiz()==null){
+            throw new ResourceNotFoundException("Quiz object is null");
         }
-        if(!qzRepo.existsById(quiz.getQuiz().getQuizId())) {
-            throw new ResourceNotFoundException("Quiz not exist!");
+        int quizId=dto.getQuiz().getQuiz().getQuizId();
+        if(!qzRepo.existsById(quizId)){
+            throw new ResourceNotFoundException("Quiz not found!");
         }
-        log.info("Saving updated quiz...");
-        qzRepo.save(quiz.getQuiz());
-        for (Question q : quiz.getQuestions()) {
-            qRepo.save(q);
+        if(dto.getQuestionNos() !=null && !dto.getQuestionNos().isEmpty()){
+            for(int qno:dto.getQuestionNos()){
+                if(qRepo.existsById(qno)){
+                    qRepo.deleteById(qno);
+                }
+            }
+        }
+
+        qzRepo.save(dto.getQuiz().getQuiz());
+
+        List<Question> questions=dto.getQuiz().getQuestions();
+
+        if(questions!=null && !questions.isEmpty()){
+            List<Integer> deleted = dto.getQuestionNos();
+            for(Question q : questions){
+                if(deleted !=null && deleted.contains(q.getQno())){
+                    continue;
+                }
+                qRepo.save(q);
+            }
         }
     }
 
-    //delete single question
-    @Transactional
-    public void deleteQuestion(int qno) {
-        if (!qRepo.existsById(qno)) {
-            log.error("Quiz not exit to delete questions!");
-            throw new ResourceNotFoundException("Question not found: " + qno);
-        }
-        qRepo.deleteById(qno);
-        log.info("Quiz deleted");
-    }
 
     //delete entire quiz
     @Transactional
@@ -128,20 +134,18 @@ public class QuizCreateServices {
             throw new ResourceNotFoundException("Quiz not found: " + quizId);
         }
         qzRepo.deleteById(quizId);
-        qRepo.deleteByQuizId(quizId);
+        log.info("Quiz deleted successfully!");
     }
 
     @Transactional
     public void switchQuizStatus(int quizId) {
         int updatedRows = qzRepo.toggleQuizStatus(quizId);
 
-
         if(updatedRows == 0) {
             log.error("Failed to toggle: Quiz not exist!");
             throw new ResourceNotFoundException("Quiz not exist!");
         }
-
-        log.info("Successfully toggled status.");
+        log.info("Successfully toggled status!");
     }
 
     public @Nullable List<ResultDTO> getResult(int quizId) {
@@ -158,7 +162,7 @@ public class QuizCreateServices {
             rs.setOutOf(participant.getOutOf());
             result.add(rs);
         }
-        log.info("Generating result...");
+        log.info("Result Generated!");
         return result;
     }
 }
