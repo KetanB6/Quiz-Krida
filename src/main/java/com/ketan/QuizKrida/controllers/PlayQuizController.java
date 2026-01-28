@@ -15,7 +15,7 @@ public class PlayQuizController {
     public PlayQuizService playQuizService;
 
 
-    @GetMapping("Play/{quizId}")
+    @GetMapping("/Play/{quizId}")
     public ResponseEntity<Quiz> loadQuiz(@PathVariable int quizId){
         Quiz quiz = playQuizService.loadQuiz(quizId);
         return ResponseEntity
@@ -24,7 +24,7 @@ public class PlayQuizController {
     }
 
 
-    @PostMapping("Play/Submit")
+    @PostMapping("/Play/Submit")
     public ResponseEntity<Void> submitQuiz(@RequestBody ParticipantScore participant) {
         playQuizService.saveParticipant(participant);
         return ResponseEntity.ok().build();

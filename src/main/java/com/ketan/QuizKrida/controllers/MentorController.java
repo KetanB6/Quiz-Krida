@@ -59,9 +59,9 @@ public class MentorController {
     }
 
     @GetMapping("/Logged/SwitchStatus/{quizId}")
-    public ResponseEntity<Void> activeQuiz(@PathVariable int quizId) {
-        service.switchQuizStatus(quizId);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<Integer> activeQuiz(@PathVariable int quizId) {
+        int exMin = service.switchQuizStatus(quizId);
+        return ResponseEntity.ok(exMin);
     }
 
     //When user submit edited Quiz

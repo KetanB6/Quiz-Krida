@@ -1,9 +1,8 @@
 package com.ketan.QuizKrida.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import jakarta.persistence.UniqueConstraint;
-import org.springframework.boot.context.properties.bind.DefaultValue;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -20,6 +19,8 @@ public class Quizzes {
     private String createdBy;//email
     private String quizTitle;
     private boolean status; //true or false
+    @JsonIgnore
+    private Instant expiryTime;
 
     public int getQuizId() {
         return quizId;
@@ -61,13 +62,11 @@ public class Quizzes {
         this.status = status;
     }
 
-    //
-//    public Instant getQuizTime() {
-//        return quizTime;
-//    }
-//
-//    public void setQuizTime(Instant quizTime) {
-//        this.quizTime = quizTime;
-//    }
+    public Instant getExpiryTime() {
+        return expiryTime;
+    }
 
+    public void setExpiryTime(Instant expiryTime) {
+        this.expiryTime = expiryTime;
+    }
 }

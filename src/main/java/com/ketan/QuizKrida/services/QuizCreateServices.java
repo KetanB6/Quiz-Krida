@@ -13,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -63,13 +65,31 @@ public class QuizCreateServices {
             throw new ResourceNotFoundException("Quiz not exist with this quiz_id " + qid);
         }
         qRepo.saveAll(questions);
+        int rowsAffected = qzRepo.setDuration(qid, questions.size()+2);
+        if(rowsAffected == 0) {
+            throw new BadRequestException("Duration update failed!");
+        }
         log.info("Saved questions");
     }
 
     //3. Return quizzes list after Mentor log-in
+    @Transactional
     public List<Quizzes> createdQuizzes(String email) {
+        List<Quizzes> quizzes= qzRepo.findByCreatedBy(email);
+        for(Quizzes q: quizzes) {
+            if(q.isStatus()) {
+                if (q.getExpiryTime().isBefore(Instant.now())) {
+                    q.setStatus(false);
+                    q.setExpiryTime(null);
+//                qzRepo.toggleQuizStatus(q.getQuizId()); --> due to dirty checking feature of hibernate we don't need to update values using dedicated function in jpa.
+//                qzRepo.setExpiryTime(null, q.getQuizId());
+                    log.info("Status of expired quizzes updated!");
+                }
+            }
+        }
+
         log.info("Returning quizzes list");
-        return qzRepo.findByCreatedBy(email);
+        return quizzes;
     }
 
     //Preview quiz
@@ -112,7 +132,7 @@ public class QuizCreateServices {
 
         qzRepo.save(dto.getQuiz().getQuiz());
 
-        List<Question> questions=dto.getQuiz().getQuestions();
+        List<Question> questions = dto.getQuiz().getQuestions();
 
         if(questions!=null && !questions.isEmpty()){
             List<Integer> deleted = dto.getQuestionNos();
@@ -122,6 +142,12 @@ public class QuizCreateServices {
                 }
                 qRepo.save(q);
             }
+        }
+
+        //finally update duration
+        int rowsAffected = qzRepo.setDuration(quizId, qRepo.countByQuizId(quizId)+2);
+        if(rowsAffected == 0) {
+            throw new BadRequestException("Duration update failed!");
         }
     }
 
@@ -138,14 +164,32 @@ public class QuizCreateServices {
     }
 
     @Transactional
-    public void switchQuizStatus(int quizId) {
-        int updatedRows = qzRepo.toggleQuizStatus(quizId);
+    public int switchQuizStatus(int quizId) {
+        int updatedRows1 = qzRepo.toggleQuizStatus(quizId);
 
-        if(updatedRows == 0) {
-            log.error("Failed to toggle: Quiz not exist!");
-            throw new ResourceNotFoundException("Quiz not exist!");
+        if(updatedRows1 == 0) {
+            log.error("Failed to toggle");
+            throw new ResourceNotFoundException("Quiz not exist to toggle!");
         }
-        log.info("Successfully toggled status!");
+
+        int updatedRows2 = 0;
+        int exMin = 0;
+        if(qzRepo.findById(quizId).get().isStatus()) {
+            exMin = qRepo.countByQuizId(quizId) + 2;
+            updatedRows2 = qzRepo.setExpiryTime(Instant.now().plus(exMin, ChronoUnit.MINUTES), quizId);
+            log.info("Quiz will expire after {} minutes.", exMin);
+        } else {
+            updatedRows2 = qzRepo.setExpiryTime(null, quizId);
+        }
+
+        if(updatedRows2 == 0) {
+            log.error("Failed to set expiry time!");
+            throw new ResourceNotFoundException("Failed to set expiry time!");
+        }
+
+        log.info("Successfully toggled status and updated expiry time!");
+        return exMin;
+
     }
 
     public @Nullable List<ResultDTO> getResult(int quizId) {

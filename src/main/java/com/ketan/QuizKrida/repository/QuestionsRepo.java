@@ -11,4 +11,6 @@ public interface QuestionsRepo extends JpaRepository<Question, Integer> {
     List<Question> findByQuizId(int quizId);
 
     void deleteByQuizId(int quizId);
+
+    int countByQuizId(int quizId);
 }
