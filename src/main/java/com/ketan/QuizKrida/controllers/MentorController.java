@@ -12,7 +12,6 @@ import java.util.List;
 
 
 @RestController
-//@CrossOrigin(origins = "https://myquizapp-psi.vercel.app")
 @CrossOrigin("*")
 public class MentorController {
 
