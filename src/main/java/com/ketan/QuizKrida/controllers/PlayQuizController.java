@@ -15,9 +15,9 @@ public class PlayQuizController {
     public PlayQuizService playQuizService;
 
 
-    @GetMapping("/Play/{quizId}")
-    public ResponseEntity<Quiz> loadQuiz(@PathVariable int quizId){
-        Quiz quiz = playQuizService.loadQuiz(quizId);
+    @GetMapping("/Play/{quizId}/{name}")
+    public ResponseEntity<Quiz> loadQuiz(@PathVariable int quizId, @PathVariable String name){
+        Quiz quiz = playQuizService.loadQuiz(quizId, name);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(quiz);

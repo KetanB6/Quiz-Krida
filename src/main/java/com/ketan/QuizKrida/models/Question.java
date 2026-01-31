@@ -21,19 +21,6 @@ public class Question {
     private String opt4;
     private String correctOpt;
 
-    @Override
-    public String toString() {
-        return "Question{" +
-                "qno=" + qno +
-                ", question='" + question + '\'' +
-                ", opt1='" + opt1 + '\'' +
-                ", opt2='" + opt2 + '\'' +
-                ", opt3='" + opt3 + '\'' +
-                ", opt4='" + opt4 + '\'' +
-                ", correctOpt='" + correctOpt + '\'' +
-                '}';
-    }
-
     public int getQuizId() {
         return quizId;
     }

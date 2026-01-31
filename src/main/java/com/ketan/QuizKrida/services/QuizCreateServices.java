@@ -3,6 +3,7 @@ package com.ketan.QuizKrida.services;
 import com.ketan.QuizKrida.exceptionsHandler.BadRequestException;
 import com.ketan.QuizKrida.exceptionsHandler.ResourceNotFoundException;
 import com.ketan.QuizKrida.models.*;
+import com.ketan.QuizKrida.repository.LiveParticipantsRepo;
 import com.ketan.QuizKrida.repository.QuestionsRepo;
 import com.ketan.QuizKrida.repository.QuizzesRepo;
 import com.ketan.QuizKrida.repository.ScoreRepo;
@@ -26,12 +27,20 @@ public class QuizCreateServices {
 //    private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
     private static final Logger log = LoggerFactory.getLogger(QuizCreateServices.class);
 
+    private static int extraMinutes = 2;
+
+    private final QuestionsRepo qRepo;
+    private final QuizzesRepo qzRepo;
+    private final ScoreRepo scoreRepo;
+    private final LiveParticipantsRepo liveParticipants;
+
     @Autowired
-    private QuestionsRepo qRepo;
-    @Autowired
-    private QuizzesRepo qzRepo;
-    @Autowired
-    private ScoreRepo scoreRepo;
+    public QuizCreateServices (QuestionsRepo qRepo, QuizzesRepo qzRepo, ScoreRepo scoreRepo, LiveParticipantsRepo liveParticipants) {
+        this.qRepo = qRepo;
+        this.qzRepo = qzRepo;
+        this.scoreRepo = scoreRepo;
+        this.liveParticipants = liveParticipants;
+    }
 
 
     //1. Creates quiz
@@ -81,6 +90,7 @@ public class QuizCreateServices {
                 if (q.getExpiryTime().isBefore(Instant.now())) {
                     q.setStatus(false);
                     q.setExpiryTime(null);
+                    liveParticipants.deleteAll();
 //                qzRepo.toggleQuizStatus(q.getQuizId()); --> due to dirty checking feature of hibernate we don't need to update values using dedicated function in jpa.
 //                qzRepo.setExpiryTime(null, q.getQuizId());
                     log.info("Status of expired quizzes updated!");
@@ -175,11 +185,12 @@ public class QuizCreateServices {
         int updatedRows2 = 0;
         int exMin = 0;
         if(qzRepo.findById(quizId).get().isStatus()) {
-            exMin = qRepo.countByQuizId(quizId) + 2;
+            exMin = qRepo.countByQuizId(quizId) + extraMinutes;
             updatedRows2 = qzRepo.setExpiryTime(Instant.now().plus(exMin, ChronoUnit.MINUTES), quizId);
             log.info("Quiz will expire after {} minutes.", exMin);
         } else {
             updatedRows2 = qzRepo.setExpiryTime(null, quizId);
+            liveParticipants.deleteAll();//status is false
         }
 
         if(updatedRows2 == 0) {
@@ -198,7 +209,7 @@ public class QuizCreateServices {
             throw new ResourceNotFoundException("Quiz not exist!");
         }
         List<ResultDTO> result = new ArrayList<>();
-        List<ParticipantScore> scores = scoreRepo.findByQuizId(quizId);
+        List<ParticipantScore> scores = scoreRepo.findByQuizIdOrderByScoreDescSubmitTimeAsc(quizId);
         for(ParticipantScore participant: scores) {
             ResultDTO rs = new ResultDTO();
             rs.setName(participant.getParticipantName());
@@ -208,5 +219,13 @@ public class QuizCreateServices {
         }
         log.info("Result Generated!");
         return result;
+    }
+
+    public @Nullable List<LiveParticipant> getLiveParticipants(int quizId) {
+        return liveParticipants.findAllByQuizId(quizId);
+    }
+
+    public @Nullable List<Quizzes> getPublicQuizzes() {
+        return qzRepo.findAllByIsPrivateFalse();
     }
 }

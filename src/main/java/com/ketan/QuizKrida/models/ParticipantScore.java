@@ -1,11 +1,14 @@
 package com.ketan.QuizKrida.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+
+import java.time.Instant;
 
 @Component
 @Scope("prototype")
@@ -18,6 +21,8 @@ public class ParticipantScore {
     private String participantName;
     private int score;
     private int outOf;
+    @JsonIgnore
+    private Instant submitTime;
 
     public int getSrNo() {
         return srNo;
@@ -57,5 +62,13 @@ public class ParticipantScore {
 
     public void setOutOf(int outOf) {
         this.outOf = outOf;
+    }
+
+    public Instant getSubmitTime() {
+        return submitTime;
+    }
+
+    public void setSubmitTime(Instant submitTime) {
+        this.submitTime = submitTime;
     }
 }

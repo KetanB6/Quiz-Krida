@@ -3,6 +3,7 @@ package com.ketan.QuizKrida.services;
 import com.ketan.QuizKrida.exceptionsHandler.BadRequestException;
 import com.ketan.QuizKrida.exceptionsHandler.ResourceNotFoundException;
 import com.ketan.QuizKrida.models.*;
+import com.ketan.QuizKrida.repository.LiveParticipantsRepo;
 import com.ketan.QuizKrida.repository.QuestionsRepo;
 import com.ketan.QuizKrida.repository.QuizzesRepo;
 import com.ketan.QuizKrida.repository.ScoreRepo;
@@ -19,17 +20,21 @@ public class PlayQuizService {
 
     private static final Logger log = LoggerFactory.getLogger(PlayQuizService.class);
 
-    @Autowired
-    private QuestionsRepo qRepo;
-    @Autowired
-    private QuizzesRepo qzRepo;
-    @Autowired
-    private ScoreRepo scoreRepo;
+    private final QuestionsRepo qRepo;
+    private final QuizzesRepo qzRepo;
+    private final ScoreRepo scoreRepo;
+    private final LiveParticipantsRepo liveParticipants;
 
-
+    @Autowired
+    public PlayQuizService (QuestionsRepo qRepo, QuizzesRepo qzRepo, ScoreRepo scoreRepo, LiveParticipantsRepo liveParticipants) {
+        this.qRepo = qRepo;
+        this.qzRepo = qzRepo;
+        this.scoreRepo = scoreRepo;
+        this.liveParticipants = liveParticipants;
+    }
 
     //1. Loads the quiz info and questions and wrap into Quiz object
-    public Quiz loadQuiz(int quizId) {
+    public Quiz loadQuiz(int quizId, String name) {
         if(!qzRepo.existsById(quizId)) {
             log.error("Quiz not exist to load");
             throw new ResourceNotFoundException("Quiz not exist!");
@@ -47,6 +52,12 @@ public class PlayQuizService {
             log.error("Quiz expired or deactivated!");
             throw new BadRequestException("Quiz Expired! " + Instant.now());
         }
+
+        //save player to show mentor live participants
+        LiveParticipant liveParticipant = new LiveParticipant();
+        liveParticipant.setQuizId(quizId);
+        liveParticipant.setName(name);
+        liveParticipants.save(liveParticipant);
 
         //check if user already attended a quiz
 //        if(scoreRepo.existsByQuizIdAndEmail(dto.getQuizId(), dto.getEmail())) {
@@ -79,6 +90,7 @@ public class PlayQuizService {
             log.info("Quiz already expired!");
             throw new BadRequestException("Quiz already expired!");
         }
+        participant.setSubmitTime(Instant.now());
         scoreRepo.save(participant);
         log.info("Participant and score saved!");
     }

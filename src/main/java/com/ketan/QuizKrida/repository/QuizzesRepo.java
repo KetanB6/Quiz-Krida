@@ -1,6 +1,7 @@
 package com.ketan.QuizKrida.repository;
 
 import com.ketan.QuizKrida.models.Quizzes;
+import org.jspecify.annotations.Nullable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -29,4 +30,6 @@ public interface QuizzesRepo extends JpaRepository<Quizzes, Integer> {
     @Transactional
     @Query("Update Quizzes q Set q.duration = :size where q.quizId = :quizId")
     int setDuration(@Param("quizId") int qid, @Param("size") int size);
+
+    @Nullable List<Quizzes> findAllByIsPrivateFalse();
 }

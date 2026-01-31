@@ -1,6 +1,7 @@
 package com.ketan.QuizKrida.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import org.springframework.context.annotation.Scope;
@@ -18,6 +19,9 @@ public class Quizzes {
     private int duration;
     private String createdBy;//email
     private String quizTitle;
+    private String author;
+    @Column(columnDefinition = "boolean default true")
+    private boolean isPrivate;
     private boolean status; //true or false
     @JsonIgnore
     private Instant expiryTime;

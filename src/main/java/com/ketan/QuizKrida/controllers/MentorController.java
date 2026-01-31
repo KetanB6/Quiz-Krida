@@ -78,10 +78,22 @@ public class MentorController {
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
+    @GetMapping("/LiveParticipants/{quizId}")
+    public ResponseEntity<List<LiveParticipant>> liveParticipants (@PathVariable int quizId) {
+        return ResponseEntity.ok(service.getLiveParticipants(quizId));
+    }
+
     //Return result list
-    @GetMapping("Logged/Result/{quizId}")
+    @GetMapping("/Logged/Result/{quizId}")
     public ResponseEntity<List<ResultDTO>> result(@PathVariable int quizId) {
         return ResponseEntity.ok(service.getResult(quizId));
+    }
+
+    @GetMapping("/Public")
+    public ResponseEntity<List<Quizzes>> publicQuizzes () {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(service.getPublicQuizzes());
     }
 
 }
