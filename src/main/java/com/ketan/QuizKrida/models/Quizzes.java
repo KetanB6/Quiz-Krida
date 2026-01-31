@@ -73,4 +73,20 @@ public class Quizzes {
     public void setExpiryTime(Instant expiryTime) {
         this.expiryTime = expiryTime;
     }
+
+    public String getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(String author) {
+        this.author = author;
+    }
+
+    public boolean isPrivate() {
+        return isPrivate;
+    }
+
+    public void setPrivate(boolean aPrivate) {
+        isPrivate = aPrivate;
+    }
 }
