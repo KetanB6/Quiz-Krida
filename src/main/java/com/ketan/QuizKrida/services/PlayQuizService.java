@@ -48,12 +48,13 @@ public class PlayQuizService {
         }
 
         //check if current time is earlier than expiryTime
-
-        if(qz.getExpiryTime().isBefore(Instant.now()) && qz.isPrivate()) {
-            qzRepo.toggleQuizStatus(quizId);
-            qzRepo.setExpiryTime(null, quizId);
-            log.error("Quiz expired or deactivated!");
-            throw new BadRequestException("Quiz Expired!");
+        if(qz.getExpiryTime() != null) {
+            if (qz.getExpiryTime().isBefore(Instant.now()) && qz.isPrivate()) {
+                qzRepo.toggleQuizStatus(quizId);
+                qzRepo.setExpiryTime(null, quizId);
+                log.error("Quiz expired or deactivated!");
+                throw new BadRequestException("Quiz Expired!");
+            }
         }
 
         //save player to show mentor live participants

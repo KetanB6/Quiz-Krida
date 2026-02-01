@@ -1,15 +1,21 @@
-# Step 1: Use a lightweight JDK 17 or 21 image
-FROM eclipse-temurin:17-jdk-alpine
-
-# Step 2: Set the working directory inside the container
+# Stage 1: Build the application
+FROM maven:3.9.6-eclipse-temurin-21 AS build
 WORKDIR /app
+# Copy the pom.xml and source code
+COPY pom.xml .
+COPY src ./src
+# Build the JAR file, skipping tests to save time and memory
+RUN mvn clean package -DskipTests
 
-# Step 3: Copy the JAR file from your target folder to the container
-# Note: Make sure you run 'mvn clean package' first!
-COPY target/*.jar app.jar
+# Stage 2: Run the application
+FROM eclipse-temurin:21-jre-alpine
+WORKDIR /app
+# Copy the JAR from the build stage
+COPY --from=build /app/target/*.jar app.jar
 
-# Step 4: Expose the port your app runs on
+# Set the PORT dynamically for Render
+ENV PORT 8080
 EXPOSE 8080
 
-# Step 5: Command to run the application
-ENTRYPOINT ["java", "-jar", "app.jar"]
+# Run with memory limits optimized for 512MB RAM
+ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar app.jar"]
