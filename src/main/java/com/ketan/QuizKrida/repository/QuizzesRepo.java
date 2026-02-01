@@ -26,12 +26,5 @@ public interface QuizzesRepo extends JpaRepository<Quizzes, Integer> {
     @Query("Update Quizzes q SET q.expiryTime = :expiryTime WHERE q.id = :quizId")
     int setExpiryTime(@Param("expiryTime") Instant expiryTime, @Param("quizId") int quizId);
 
-    @Modifying
-    @Transactional
-    @Query("Update Quizzes q Set q.duration = :size where q.quizId = :quizId")
-    int setDuration(@Param("quizId") int qid, @Param("size") int size);
-
-//    @Nullable List<Quizzes> findAllByIsPrivateFalse();
-
     @Nullable List<Quizzes> findAllByIsPrivateFalseAndStatusTrue();
 }

@@ -70,14 +70,18 @@ public class QuizCreateServices {
     public void saveQuestion(List<Question> questions) {
         int qid = questions.getFirst().getQuizId();
         if(!qzRepo.existsById(qid)) {
-            log.error("Quiz not exist with this quiz_id " + qid);
-            throw new ResourceNotFoundException("Quiz not exist with this quiz_id " + qid);
+            log.error("Quiz not exist!");
+            throw new ResourceNotFoundException("Quiz not exist! ");
         }
         qRepo.saveAll(questions);
-        int rowsAffected = qzRepo.setDuration(qid, questions.size()+2);
-        if(rowsAffected == 0) {
-            throw new BadRequestException("Duration update failed!");
+
+        Quizzes qz = qzRepo.findById(qid).get();
+        if(qz.isTimer()) {
+            qz.setDuration(questions.size() + extraMinutes);
+        } else {
+            qz.setDuration(1440);
         }
+
         log.info("Saved questions");
     }
 
@@ -144,6 +148,14 @@ public class QuizCreateServices {
             }
         }
 
+        Quizzes qz = dto.getQuiz().getQuiz();
+
+        if(qz.isTimer()) {
+            qz.setDuration(qRepo.countByQuizId(quizId)+2);
+        } else {
+            qz.setDuration(1440);
+        }
+
         qzRepo.save(dto.getQuiz().getQuiz());
 
         List<Question> questions = dto.getQuiz().getQuestions();
@@ -156,12 +168,6 @@ public class QuizCreateServices {
                 }
                 qRepo.save(q);
             }
-        }
-
-        //finally update duration
-        int rowsAffected = qzRepo.setDuration(quizId, qRepo.countByQuizId(quizId)+2);
-        if(rowsAffected == 0) {
-            throw new BadRequestException("Duration update failed!");
         }
     }
 

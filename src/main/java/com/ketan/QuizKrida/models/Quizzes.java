@@ -1,13 +1,13 @@
 package com.ketan.QuizKrida.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import java.security.Timestamp;
 import java.time.Instant;
 
 @Component
@@ -20,9 +20,15 @@ public class Quizzes {
     private String createdBy;//email
     private String quizTitle;
     private String author;
-    @Column(columnDefinition = "boolean default true")
-    private boolean isPrivate;
     private boolean status; //true or false
+    private int timePerQ;
+
+    @Column(columnDefinition = "boolean default true")
+    private boolean timer;
+    @Column(columnDefinition = "boolean default true")
+    @JsonProperty("isPrivate")
+    private boolean isPrivate;
+
     @JsonIgnore
     private Instant expiryTime;
 
@@ -82,11 +88,27 @@ public class Quizzes {
         this.author = author;
     }
 
+    public int getTimePerQ() {
+        return timePerQ;
+    }
+
+    public void setTimePerQ(int timePerQ) {
+        this.timePerQ = timePerQ;
+    }
+
+    public boolean isTimer() {
+        return timer;
+    }
+
+    public void setTimer(boolean timer) {
+        this.timer = timer;
+    }
+
     public boolean isPrivate() {
         return isPrivate;
     }
 
-    public void setPrivate(boolean aPrivate) {
-        isPrivate = aPrivate;
+    public void setPrivate(boolean isPrivate) {
+        this.isPrivate = isPrivate;
     }
 }
