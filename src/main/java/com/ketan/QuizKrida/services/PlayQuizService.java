@@ -40,17 +40,20 @@ public class PlayQuizService {
             throw new ResourceNotFoundException("Quiz not exist!");
         }
 
-        if(!qzRepo.findById(quizId).get().isStatus()) {
+        Quizzes qz = qzRepo.findById(quizId).get();
+
+        if(!qz.isStatus()) {
             log.error("Quiz not yet started to play!");
             throw new BadRequestException("Quiz not started yet!");
         }
 
         //check if current time is earlier than expiryTime
-        if(qzRepo.findById(quizId).get().getExpiryTime().isBefore(Instant.now())) {
+
+        if(qz.getExpiryTime().isBefore(Instant.now()) && qz.isPrivate()) {
             qzRepo.toggleQuizStatus(quizId);
             qzRepo.setExpiryTime(null, quizId);
             log.error("Quiz expired or deactivated!");
-            throw new BadRequestException("Quiz Expired! " + Instant.now());
+            throw new BadRequestException("Quiz Expired!");
         }
 
         //save player to show mentor live participants

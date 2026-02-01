@@ -86,7 +86,11 @@ public class QuizCreateServices {
     public List<Quizzes> createdQuizzes(String email) {
         List<Quizzes> quizzes= qzRepo.findByCreatedBy(email);
         for(Quizzes q: quizzes) {
-            if(q.isStatus()) {
+            if(q.isStatus() && q.getExpiryTime() != null) {
+                if(!q.isPrivate()) {
+                    q.setExpiryTime(null);
+                    continue;
+                }
                 if (q.getExpiryTime().isBefore(Instant.now())) {
                     q.setStatus(false);
                     q.setExpiryTime(null);
@@ -182,9 +186,16 @@ public class QuizCreateServices {
             throw new ResourceNotFoundException("Quiz not exist to toggle!");
         }
 
+        Quizzes quiz = qzRepo.findById(quizId).get();
+        if(!quiz.isPrivate()) {
+            log.info("Quiz is public!");
+            return -1; //if front-end receive zero the display message : quiz will not expire
+        }
+
         int updatedRows2 = 0;
         int exMin = 0;
-        if(qzRepo.findById(quizId).get().isStatus()) {
+
+        if(quiz.isStatus()) {
             exMin = qRepo.countByQuizId(quizId) + extraMinutes;
             updatedRows2 = qzRepo.setExpiryTime(Instant.now().plus(exMin, ChronoUnit.MINUTES), quizId);
             log.info("Quiz will expire after {} minutes.", exMin);
@@ -226,6 +237,6 @@ public class QuizCreateServices {
     }
 
     public @Nullable List<Quizzes> getPublicQuizzes() {
-        return qzRepo.findAllByIsPrivateFalse();
+        return qzRepo.findAllByIsPrivateFalseAndStatusTrue();
     }
 }
