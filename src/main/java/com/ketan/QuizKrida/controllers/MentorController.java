@@ -12,7 +12,7 @@ import java.util.List;
 
 
 @RestController
-@CrossOrigin(origins = "https://myquizapp-psi.vercel.app")
+@CrossOrigin("*")
 public class MentorController {
 
     @Autowired
@@ -28,7 +28,6 @@ public class MentorController {
 
     @PostMapping("/Create")
     public ResponseEntity<Integer> createQuiz(@RequestBody Quizzes quiz){
-        System.out.println("Name received from dhiraj is: " + quiz.getAuthor());
         int newId = service.generateUniqueQuizId();
         quiz.setQuizId(newId);
         service.createQuiz(quiz);

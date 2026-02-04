@@ -58,10 +58,12 @@ public class PlayQuizService {
         }
 
         //save player to show mentor live participants
-        LiveParticipant liveParticipant = new LiveParticipant();
-        liveParticipant.setQuizId(quizId);
-        liveParticipant.setName(name);
-        liveParticipants.save(liveParticipant);
+        if(qz.isPrivate()) {
+            LiveParticipant liveParticipant = new LiveParticipant();
+            liveParticipant.setQuizId(quizId);
+            liveParticipant.setName(name);
+            liveParticipants.save(liveParticipant);
+        }
 
         //check if user already attended a quiz
 //        if(scoreRepo.existsByQuizIdAndEmail(dto.getQuizId(), dto.getEmail())) {
