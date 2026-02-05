@@ -10,10 +10,15 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @CrossOrigin("*")
+@RequestMapping("/api/v1")
 public class PlayQuizController {
     @Autowired
     public PlayQuizService playQuizService;
 
+    @GetMapping
+    public String apiInfo() {
+        return "You are on API URL. Please visit official site: https://myquizapp-psi.vercel.app/";
+    }
 
     @GetMapping("/Play/{quizId}/{name}")
     public ResponseEntity<Quiz> loadQuiz(@PathVariable int quizId, @PathVariable String name){

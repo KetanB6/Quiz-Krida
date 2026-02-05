@@ -99,8 +99,6 @@ public class QuizCreateServices {
                     q.setStatus(false);
                     q.setExpiryTime(null);
                     liveParticipants.deleteAll();
-//                qzRepo.toggleQuizStatus(q.getQuizId()); --> due to dirty checking feature of hibernate we don't need to update values using dedicated function in jpa.
-//                qzRepo.setExpiryTime(null, q.getQuizId());
                     log.info("Status of expired quizzes updated!");
                 }
             }
@@ -201,12 +199,13 @@ public class QuizCreateServices {
         int updatedRows2 = 0;
         int exMin = 0;
 
-        if(quiz.isStatus()) {
+        if(quiz.isStatus() && quiz.isTimer()) {
             exMin = qRepo.countByQuizId(quizId) + extraMinutes;
             updatedRows2 = qzRepo.setExpiryTime(Instant.now().plus(exMin, ChronoUnit.MINUTES), quizId);
             log.info("Quiz will expire after {} minutes.", exMin);
         } else {
             updatedRows2 = qzRepo.setExpiryTime(null, quizId);
+            log.info("Quiz will expire after  minutes.");
             liveParticipants.deleteAll();//status is false
         }
 
