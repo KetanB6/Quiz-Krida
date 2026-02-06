@@ -196,6 +196,11 @@ public class QuizCreateServices {
             return -1; //if front-end receive -1 the display message : quiz will not expire
         }
 
+        if(!quiz.isStatus()) {
+            log.info("Quiz is switched off!");
+            return 0;
+        }
+
         int updatedRows2 = 0;
         int exMin = 1440; //change to 1440 if timer is off
 
@@ -205,7 +210,7 @@ public class QuizCreateServices {
             log.info("Quiz will expire after {} minutes.", exMin);
         } else {
             updatedRows2 = qzRepo.setExpiryTime(null, quizId);
-            log.info("Quiz will expire after  minutes.");
+            log.info("Quiz will expire after 1440 minutes.");
             liveParticipants.deleteAll();//status is false
         }
 
