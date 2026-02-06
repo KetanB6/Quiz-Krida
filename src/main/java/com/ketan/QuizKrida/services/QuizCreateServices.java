@@ -193,11 +193,11 @@ public class QuizCreateServices {
         Quizzes quiz = qzRepo.findById(quizId).get();
         if(!quiz.isPrivate()) {
             log.info("Quiz is public!");
-            return -1; //if front-end receive zero the display message : quiz will not expire
+            return -1; //if front-end receive -1 the display message : quiz will not expire
         }
 
         int updatedRows2 = 0;
-        int exMin = 0;
+        int exMin = 1440; //change to 1440 if timer is off
 
         if(quiz.isStatus() && quiz.isTimer()) {
             exMin = qRepo.countByQuizId(quizId) + extraMinutes;
