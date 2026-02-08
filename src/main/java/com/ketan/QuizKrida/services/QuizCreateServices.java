@@ -135,6 +135,9 @@ public class QuizCreateServices {
             throw new ResourceNotFoundException("Quiz object is null");
         }
         int quizId=dto.getQuiz().getQuiz().getQuizId();
+        if(qzRepo.findById(quizId).get().isStatus()) {
+            throw new BadRequestException("Active Quizzes cannot be edited!");
+        }
         if(!qzRepo.existsById(quizId)){
             throw new ResourceNotFoundException("Quiz not found!");
         }
