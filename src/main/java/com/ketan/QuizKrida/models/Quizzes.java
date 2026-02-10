@@ -104,6 +104,7 @@ public class Quizzes {
         this.timer = timer;
     }
 
+    @JsonProperty("isPrivate")
     public boolean isPrivate() {
         return isPrivate;
     }
