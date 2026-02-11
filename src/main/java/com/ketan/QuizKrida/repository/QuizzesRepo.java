@@ -27,4 +27,6 @@ public interface QuizzesRepo extends JpaRepository<Quizzes, Integer> {
     int setExpiryTime(@Param("expiryTime") Instant expiryTime, @Param("quizId") int quizId);
 
     @Nullable List<Quizzes> findAllByIsPrivateFalseAndStatusTrue();
+
+    void deleteAllByCreatedBy(String email);
 }

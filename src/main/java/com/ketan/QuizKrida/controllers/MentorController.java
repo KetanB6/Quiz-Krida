@@ -91,11 +91,19 @@ public class MentorController {
         return ResponseEntity.ok(service.getResult(quizId));
     }
 
+    //Return public quizzes
     @GetMapping("/Public")
     public ResponseEntity<List<Quizzes>> publicQuizzes () {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(service.getPublicQuizzes());
+    }
+
+    //Delete account
+    @GetMapping("/Delete/Account/{email}")
+    public ResponseEntity<Void> deleteAccount(@PathVariable String email) {
+        service.deleteAccount(email);
+        return ResponseEntity.ok().build();
     }
 
 }

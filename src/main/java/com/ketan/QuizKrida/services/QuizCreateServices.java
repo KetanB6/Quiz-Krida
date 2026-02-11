@@ -172,7 +172,6 @@ public class QuizCreateServices {
         }
     }
 
-
     //delete entire quiz
     @Transactional
     public void deleteQuiz(int quizId) {
@@ -251,5 +250,10 @@ public class QuizCreateServices {
 
     public @Nullable List<Quizzes> getPublicQuizzes() {
         return qzRepo.findAllByIsPrivateFalseAndStatusTrue();
+    }
+
+    @Transactional
+    public void deleteAccount(String email) {
+        qzRepo.deleteAllByCreatedBy(email);
     }
 }
