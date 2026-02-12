@@ -27,7 +27,7 @@ public class QuizCreateServices {
 //    private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
     private static final Logger log = LoggerFactory.getLogger(QuizCreateServices.class);
 
-    private static int extraMinutes = 2;
+    private static final int extraMinutes = 2;
 
     private final QuestionsRepo qRepo;
     private final QuizzesRepo qzRepo;
@@ -179,6 +179,7 @@ public class QuizCreateServices {
             log.error("Quiz not exist to delete!");
             throw new ResourceNotFoundException("Quiz not found: " + quizId);
         }
+        scoreRepo.deleteByQuizId(quizId);
         qzRepo.deleteById(quizId);
         log.info("Quiz deleted successfully!");
     }
@@ -254,6 +255,12 @@ public class QuizCreateServices {
 
     @Transactional
     public void deleteAccount(String email) {
+        log.info("Account deleted: {}", email);
         qzRepo.deleteAllByCreatedBy(email);
+    }
+
+    @Transactional
+    public void resetResult(int quizId) {
+        scoreRepo.deleteByQuizId(quizId);
     }
 }

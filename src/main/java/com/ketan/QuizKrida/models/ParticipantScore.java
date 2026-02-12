@@ -11,7 +11,6 @@ import org.springframework.stereotype.Component;
 import java.time.Instant;
 
 @Component
-@Scope("prototype")
 @Entity
 public class ParticipantScore {
     @Id

@@ -8,4 +8,5 @@ import java.util.List;
 
 public interface LiveParticipantsRepo extends JpaRepository<LiveParticipant, Integer> {
     @Nullable List<LiveParticipant> findAllByQuizId(int quizId);
+
 }

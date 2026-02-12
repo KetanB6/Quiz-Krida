@@ -12,7 +12,6 @@ import java.time.Instant;
 
 @Component
 @Entity
-@Scope("prototype")
 public class Quizzes {
     @Id
     private int quizId;

@@ -4,7 +4,6 @@ import org.springframework.context.annotation.Scope;
 
 import java.util.List;
 
-@Scope("prototype")
 public class Quiz {
     private Quizzes quiz;
     private List<Question> questions;

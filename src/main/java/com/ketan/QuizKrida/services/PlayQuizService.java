@@ -92,7 +92,11 @@ public class PlayQuizService {
             log.error("Participant object is empty!");
             throw new BadRequestException("Participant is empty!");
         }
-        if(!qzRepo.findById(participant.getQuizId()).get().isStatus()) {
+        Quizzes qz = qzRepo.findById(participant.getQuizId()).get();
+
+        if(!qz.isPrivate()) return; //if quiz is public, no need to store score
+
+        if(!qz.isStatus()) {
             log.info("Quiz already expired!");
             throw new BadRequestException("Quiz already expired!");
         }

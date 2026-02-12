@@ -10,4 +10,6 @@ public interface ScoreRepo extends JpaRepository<ParticipantScore, Integer> {
 //    List<ParticipantScore> findByQuizId(int quizId);
 
     List<ParticipantScore> findByQuizIdOrderByScoreDescSubmitTimeAsc(int quizId);
+
+    void deleteByQuizId(int quizId);
 }

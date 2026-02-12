@@ -9,7 +9,6 @@ import org.springframework.stereotype.Component;
 
 @Entity
 @Component
-@Scope("prototype")
 public class LiveParticipant {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

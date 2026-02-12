@@ -91,6 +91,13 @@ public class MentorController {
         return ResponseEntity.ok(service.getResult(quizId));
     }
 
+    //reset result
+    @DeleteMapping("/Delete/Result/{quizId}")
+    public ResponseEntity<Void> resetResult(@PathVariable int quizId) {
+        service.resetResult(quizId);
+        return ResponseEntity.ok().build();
+    }
+
     //Return public quizzes
     @GetMapping("/Public")
     public ResponseEntity<List<Quizzes>> publicQuizzes () {
@@ -100,7 +107,7 @@ public class MentorController {
     }
 
     //Delete account
-    @GetMapping("/Delete/Account/{email}")
+    @DeleteMapping("/Delete/Account/{email}")
     public ResponseEntity<Void> deleteAccount(@PathVariable String email) {
         service.deleteAccount(email);
         return ResponseEntity.ok().build();
