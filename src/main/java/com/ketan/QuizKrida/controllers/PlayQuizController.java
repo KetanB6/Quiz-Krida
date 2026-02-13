@@ -9,8 +9,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-//@CrossOrigin(origins = "https://quizkrida.vercel.app")
-@CrossOrigin("*")
 @RequestMapping("/api/v1")
 public class PlayQuizController {
     @Autowired
