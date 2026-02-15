@@ -200,6 +200,7 @@ public class QuizCreateServices {
         }
 
         if(!quiz.isStatus()) {
+            liveParticipants.deleteByQuizId(quizId); //remove all participants
             log.info("Quiz is switched off!");
             return 0;
         }
