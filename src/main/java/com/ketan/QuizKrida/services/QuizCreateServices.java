@@ -213,7 +213,7 @@ public class QuizCreateServices {
             updatedRows2 = qzRepo.setExpiryTime(Instant.now().plus(exMin, ChronoUnit.MINUTES), quizId);
             log.info("Quiz will expire after {} minutes.", exMin);
         } else {
-            updatedRows2 = qzRepo.setExpiryTime(null, quizId);
+            updatedRows2 = qzRepo.setExpiryTime(Instant.now().plus(exMin, ChronoUnit.MINUTES), quizId); //set null if dont want private quizzes to deactivate automatically
             log.info("Quiz will expire after 1440 minutes.");
             liveParticipants.deleteAll();//status is false
         }
