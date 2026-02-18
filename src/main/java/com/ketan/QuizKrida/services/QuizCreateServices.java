@@ -246,6 +246,34 @@ public class QuizCreateServices {
         return result;
     }
 
+    public @Nullable List<ResultDTO> getResultOfTopN(int quizId, int n) {
+        if(!qzRepo.existsById(quizId)) {
+            log.error("Quiz not exist to generate result!");
+            throw new ResourceNotFoundException("Quiz not exist!");
+        }
+        int count = 1;
+        List<ResultDTO> result = new ArrayList<>();
+        List<ParticipantScore> scores = scoreRepo.findByQuizIdOrderByScoreDescSubmitTimeAsc(quizId);
+        int top = scores.getFirst().getScore();
+        for(ParticipantScore participant: scores) {
+            if(participant.getScore() < top){
+                top = participant.getScore();
+                count++;
+            }
+            if(count > n) {
+                break;
+            }
+
+            ResultDTO rs = new ResultDTO();
+            rs.setName(participant.getParticipantName());
+            rs.setScore(participant.getScore());
+            rs.setOutOf(participant.getOutOf());
+            result.add(rs);
+        }
+        log.info("Result Generated");
+        return result;
+    }
+
     public @Nullable List<LiveParticipant> getLiveParticipants(int quizId) {
         return liveParticipants.findAllByQuizId(quizId);
     }

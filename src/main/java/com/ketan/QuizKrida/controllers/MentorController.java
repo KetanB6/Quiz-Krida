@@ -91,6 +91,11 @@ public class MentorController {
         return ResponseEntity.ok(service.getResult(quizId));
     }
 
+    @GetMapping("Logged/Result/{quizId}/{n}")
+    public ResponseEntity<List<ResultDTO>> resultOfTopN(@PathVariable int quizId, @PathVariable int n) {
+        return ResponseEntity.ok(service.getResultOfTopN(quizId, n));
+    }
+
     //reset result
     @DeleteMapping("/Delete/Result/{quizId}")
     public ResponseEntity<Void> resetResult(@PathVariable int quizId) {
