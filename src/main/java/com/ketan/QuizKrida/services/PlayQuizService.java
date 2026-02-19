@@ -12,7 +12,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.crypto.Cipher;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.spec.SecretKeySpec;
+import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 
 @Service
@@ -83,9 +89,26 @@ public class PlayQuizService {
 
     //b. Load quiz questions
     public List<Question> loadQuestions(int quizId) {
-        return qRepo.findByQuizId(quizId);
+        List<Question> questions = qRepo.findByQuizId(quizId);
+        for(Question q: questions) {
+            String correctOption = q.getCorrectOpt();
+            String encryptedOption = encrypt(correctOption);
+            q.setCorrectOpt(encryptedOption);
+        }
+        return questions;
     }
 
+    public String encrypt(String option) {
+        String secret = "jon-snow-is-here";
+        try{
+            SecretKeySpec spec = new SecretKeySpec(secret.getBytes(), "AES");
+            Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
+            cipher.init(cipher.ENCRYPT_MODE, spec);
+            return Base64.getEncoder().encodeToString(cipher.doFinal(option.getBytes()));
+        } catch (Exception e) {
+            throw new BadRequestException("Failed to encrypt correct option");
+        }
+    }
 
     public void saveParticipant(ParticipantScore participant) {
         if(participant == null) {
@@ -106,3 +129,22 @@ public class PlayQuizService {
     }
 
 }
+
+/*
+
+public String decrypt(String encryptedData, String secretKey) throws Exception {
+    // 1. Prepare the key (Must be 16, 24, or 32 chars)
+    SecretKeySpec spec = new SecretKeySpec(secretKey.getBytes(), "AES");
+
+    // 2. Initialize the Cipher in DECRYPT_MODE
+    Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
+    cipher.init(Cipher.DECRYPT_MODE, spec);
+
+    // 3. Decode the Base64 string back to bytes
+    byte[] decodedBytes = Base64.getDecoder().decode(encryptedData);
+
+    // 4. Decrypt and return as a string
+    byte[] originalValue = cipher.doFinal(decodedBytes);
+    return new String(originalValue);
+}
+*/

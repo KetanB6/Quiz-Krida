@@ -33,4 +33,9 @@ public class PlayQuizController {
         playQuizService.saveParticipant(participant);
         return ResponseEntity.ok().build();
     }
+
+//    @GetMapping("/decrypt/{code}")
+//    public String decrypt(@PathVariable String code) throws Exception{
+//        return playQuizService.decrypt(code, "jon-snow-is-here");
+//    }
 }
