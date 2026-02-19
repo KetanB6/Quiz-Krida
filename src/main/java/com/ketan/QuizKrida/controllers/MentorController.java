@@ -17,15 +17,21 @@ import java.util.List;
 @RequestMapping("/api/v1")
 public class MentorController {
 
-    @Autowired
-    public QuizCreateServices service;
+    private final QuizCreateServices service;
 
     @Autowired
-    public PlayQuizService playQuizService;
+    public MentorController (QuizCreateServices service) {
+        this.service = service;
+    }
 
     @GetMapping("/Health")
     public ResponseEntity<String> health(){
         return ResponseEntity.ok("Active");
+    }
+
+    @GetMapping("/login")
+    public ResponseEntity<?> login(@RequestParam String token) {
+        return ResponseEntity.ok().build();
     }
 
     @PostMapping("/Create")

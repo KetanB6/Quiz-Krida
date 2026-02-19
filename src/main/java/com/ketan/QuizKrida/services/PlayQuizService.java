@@ -81,7 +81,6 @@ public class PlayQuizService {
         return new Quiz(loadQuizInfo(quizId), loadQuestions(quizId));
     }
 
-
     //a. Load quiz info
     public Quizzes loadQuizInfo(int quizId) {
         return qzRepo.findById(quizId).orElse(new Quizzes());

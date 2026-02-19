@@ -11,8 +11,13 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1")
 public class PlayQuizController {
+
+    private final PlayQuizService playQuizService;
+
     @Autowired
-    public PlayQuizService playQuizService;
+    public PlayQuizController(PlayQuizService playQuizService) {
+        this.playQuizService = playQuizService;
+    }
 
     @GetMapping
     public String apiInfo() {
