@@ -29,9 +29,9 @@ public class MentorController {
         return ResponseEntity.ok("Active");
     }
 
-    @GetMapping("/login")
-    public ResponseEntity<?> login(@RequestParam String token) {
-        return ResponseEntity.ok().build();
+    @GetMapping("/error")
+    public ResponseEntity<?> error() {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 
     @PostMapping("/Create")
