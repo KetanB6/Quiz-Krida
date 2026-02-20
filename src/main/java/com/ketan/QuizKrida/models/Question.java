@@ -12,6 +12,7 @@ public class Question {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int qno; //do not provide qno in json
     private int quizId;
+    private String subTopic;
     @Lob
     @Column(columnDefinition = "TEXT")
     private String question;
@@ -83,5 +84,13 @@ public class Question {
 
     public void setCorrectOpt(String correctOpt) {
         this.correctOpt = correctOpt;
+    }
+
+    public String getSubTopic() {
+        return subTopic;
+    }
+
+    public void setSubTopic(String subTopic) {
+        this.subTopic = subTopic;
     }
 }

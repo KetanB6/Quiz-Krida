@@ -20,6 +20,11 @@ public class ParticipantScore {
     private String participantName;
     private int score;
     private int outOf;
+    private String email;
+    private String studentClass;
+    private String division;
+    private int rollNo;
+
     @JsonIgnore
     private Instant submitTime;
 
@@ -69,5 +74,37 @@ public class ParticipantScore {
 
     public void setSubmitTime(Instant submitTime) {
         this.submitTime = submitTime;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getStudentClass() {
+        return studentClass;
+    }
+
+    public void setStudentClass(String studentClass) {
+        this.studentClass = studentClass;
+    }
+
+    public String getDivision() {
+        return division;
+    }
+
+    public void setDivision(String division) {
+        this.division = division;
+    }
+
+    public int getRollNo() {
+        return rollNo;
+    }
+
+    public void setRollNo(int rollNo) {
+        this.rollNo = rollNo;
     }
 }
