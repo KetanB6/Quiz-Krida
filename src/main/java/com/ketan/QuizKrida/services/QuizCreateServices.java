@@ -268,7 +268,10 @@ public class QuizCreateServices {
             }
 
             ResultDTO rs = new ResultDTO();
+            rs.setRollNo(participant.getRollNo());
             rs.setName(participant.getParticipantName());
+            rs.setStudentClass(participant.getStudentClass());
+            rs.setDivision(participant.getDivision());
             rs.setScore(participant.getScore());
             rs.setOutOf(participant.getOutOf());
             result.add(rs);
