@@ -10,6 +10,7 @@ import com.ketan.QuizKrida.repository.ScoreRepo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.Cipher;
@@ -123,8 +124,13 @@ public class PlayQuizService {
             throw new BadRequestException("Quiz already expired!");
         }
         participant.setSubmitTime(Instant.now());
-        scoreRepo.save(participant);
-        log.info("Participant and score saved!");
+        try {
+            scoreRepo.save(participant);
+            log.info("Participant and score saved!");
+        } catch (DataIntegrityViolationException e) {
+            log.warn("Duplicate submission attempt blocked for quizId={} email={}",participant.getQuizId(), participant.getEmail());
+            throw new BadRequestException("Record already exist!");
+        }
     }
 
 }

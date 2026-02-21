@@ -1,10 +1,7 @@
 package com.ketan.QuizKrida.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -12,6 +9,11 @@ import java.time.Instant;
 
 @Component
 @Entity
+@Table(
+        uniqueConstraints = @UniqueConstraint(
+                columnNames = {"quiz_id", "email"}
+        )
+)
 public class ParticipantScore {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,6 +22,7 @@ public class ParticipantScore {
     private String participantName;
     private int score;
     private int outOf;
+    @Column(nullable = false)
     private String email;
     private String studentClass;
     private String division;
