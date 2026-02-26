@@ -281,6 +281,7 @@ public class QuizCreateServices {
     }
 
     public @Nullable List<LiveParticipant> getLiveParticipants(int quizId) {
+
         return liveParticipants.findAllByQuizId(quizId);
     }
 

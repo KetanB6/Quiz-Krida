@@ -18,6 +18,7 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
 import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
@@ -41,7 +42,7 @@ public class PlayQuizService {
     }
 
     //1. Loads the quiz info and questions and wrap into Quiz object
-    public Quiz loadQuiz(int quizId, String name) {
+    public Quiz loadQuiz(int quizId, String name, String email) {
         if(!qzRepo.existsById(quizId)) {
             log.error("Quiz not exist to load");
             throw new ResourceNotFoundException("Quiz not exist!");
@@ -52,6 +53,12 @@ public class PlayQuizService {
         if(!qz.isStatus()) {
             log.error("Quiz not yet started to play!");
             throw new BadRequestException("Quiz not started yet!");
+        }
+
+        //check if user already attended a quiz
+        if(scoreRepo.existsByQuizIdAndEmail(quizId, email)) {
+            log.error("Quiz is already submitted by the user: {}", email);
+            throw new BadRequestException("It seems you already attempted a quiz!");
         }
 
         //check if current time is earlier than expiryTime
@@ -69,14 +76,10 @@ public class PlayQuizService {
             LiveParticipant liveParticipant = new LiveParticipant();
             liveParticipant.setQuizId(quizId);
             liveParticipant.setName(name);
+            liveParticipant.setEmail(email);
+            liveParticipant.setAttendTime(LocalDateTime.now().withNano(0));
             liveParticipants.save(liveParticipant);
         }
-
-        //check if user already attended a quiz
-//        if(scoreRepo.existsByQuizIdAndEmail(dto.getQuizId(), dto.getEmail())) {
-//            log.error("Quiz is already submitted by the user: {}", dto.getEmail());
-//            throw new BadRequestException("It seems you already attempted a quiz!");
-//        }
 
         log.info("Starting Quiz...");
         return new Quiz(loadQuizInfo(quizId), loadQuestions(quizId));

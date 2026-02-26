@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
-public interface LiveParticipantsRepo extends JpaRepository<LiveParticipant, Integer> {
+public interface LiveParticipantsRepo extends JpaRepository<LiveParticipant, String> {
     @Nullable List<LiveParticipant> findAllByQuizId(int quizId);
 
     void deleteByQuizId(int quizId);

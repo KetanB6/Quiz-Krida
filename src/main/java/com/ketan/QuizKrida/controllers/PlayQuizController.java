@@ -24,9 +24,9 @@ public class PlayQuizController {
         return "You are on API URL. Please visit official site: https://myquizapp-psi.vercel.app/";
     }
 
-    @GetMapping("/Play/{quizId}/{name}")
-    public ResponseEntity<Quiz> loadQuiz(@PathVariable int quizId, @PathVariable String name){
-        Quiz quiz = playQuizService.loadQuiz(quizId, name);
+    @GetMapping("/Play/{quizId}/{name}/{email}")
+    public ResponseEntity<Quiz> loadQuiz(@PathVariable int quizId, @PathVariable String name, @PathVariable String email){
+        Quiz quiz = playQuizService.loadQuiz(quizId, name, email);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(quiz);
