@@ -10,6 +10,7 @@ import com.ketan.QuizKrida.repository.ScoreRepo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
@@ -42,6 +43,7 @@ public class PlayQuizService {
     }
 
     //1. Loads the quiz info and questions and wrap into Quiz object
+
     public Quiz loadQuiz(int quizId, String name, String email) {
         if(!qzRepo.existsById(quizId)) {
             log.error("Quiz not exist to load");
@@ -91,7 +93,10 @@ public class PlayQuizService {
     }
 
     //b. Load quiz questions
+    @Cacheable(value = "quizQuestions", key = "#quizId")
     public List<Question> loadQuestions(int quizId) {
+        log.info("Fetching from TiDB and encrypting for quiz: {}", quizId);
+
         List<Question> questions = qRepo.findByQuizId(quizId);
         for(Question q: questions) {
             String correctOption = q.getCorrectOpt();
